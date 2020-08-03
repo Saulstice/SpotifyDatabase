@@ -1,0 +1,88 @@
+/*QUESTION 1 COMPLETED*/
+USE spotify;
+
+CREATE VIEW most_popular_artist AS
+SELECT CONCAT(artist_FN, ' ', artist_LN) AS "Artist's Name", SUM(number_streams) AS "Artist's Total Streams"
+FROM artist JOIN songs_link_artist USING(artist_id) JOIN songs USING(song_id)
+WHERE artist_LN != 'N/A'
+GROUP BY artist_id;
+
+/*QUESTION 2 COMPLETED*/
+USE spotify;
+
+CREATE VIEW average_song_length AS
+SELECT AVG((SUBSTRING(length, 1))*60 + (SUBSTRING(length, 3, 2))) AS "Average Song Length (Seconds)"
+FROM songs;
+
+/*QUESTION 3 COMPLETED*/
+USE spotify;
+
+CREATE VIEW songs_above_average AS
+SELECT song_name AS "Song Name", length AS "Song Length", number_streams AS "Number of Streams"
+FROM songs
+WHERE number_streams > (SELECT AVG(number_streams) FROM songs)
+ORDER BY number_streams DESC;
+
+/*QUESTION 4 COMPLETED*/
+USE spotify;
+
+CREATE VIEW songs_released_2017 AS
+SELECT song_name AS "Song Name", release_date AS "Release Date", album_name AS "Album Name", length AS "Song Length", songs.rank AS '2018 Ranking', number_streams AS "Number Of Streams"
+FROM songs
+WHERE release_date < '2018-01-01'
+ORDER BY number_streams DESC;
+
+CREATE VIEW songs_released_2018 AS
+SELECT song_name AS "Song Name", release_date AS "Release Date", album_name AS "Album Name", length AS "Song Length", songs.rank AS '2018 Ranking', number_streams AS "Number Of Streams"
+FROM songs
+WHERE release_date >= '2018-01-01'
+ORDER BY number_streams DESC;
+
+/*QUESTION 5 COMPLETED*/
+USE spotify;
+
+CREATE VIEW most_popular_release_date AS
+SELECT song_name AS "Song Name", release_date AS "Release Date", number_streams AS "Number of Streams"
+FROM songs
+ORDER BY number_streams DESC;
+
+/*QUESTION 6 COMPLETED*/
+USE spotify;
+
+CREATE VIEW most_popular_label AS
+SELECT label_name AS "Label Name", SUM(number_streams) AS "Total Number of Streams"
+FROM songs JOIN songs_link_artist USING(song_id) JOIN artist_link_label USING(artist_id) JOIN label USING(label_id)
+GROUP BY label_name
+ORDER BY number_streams DESC;
+
+/*QUESTION 7 COMPLETED*/
+USE spotify;
+
+CREATE VIEW total_stream_count AS
+SELECT SUM(number_streams) AS "Total Number of Streams"
+FROM songs;
+
+/*QUESTION 8*/
+USE spotify;
+
+CREATE VIEW drake_song_count AS
+SELECT COUNT(song_name) AS "Number of Drake Songs"
+FROM songs JOIN songs_link_artist USING(song_id) JOIN artist USING(artist_id)
+WHERE stage_name = 'Drake';
+
+USE spotify;
+
+CREATE VIEW drake_songs AS
+SELECT song_name AS "Song Name", number_streams AS "Number of Streams"
+FROM songs JOIN songs_link_artist USING(song_id) JOIN artist USING(artist_id)
+WHERE stage_name = 'Drake'
+ORDER BY number_streams;
+
+/*QUESTION 9*/ 
+USE spotify;
+
+CREATE VIEW producer_song_count AS
+SELECT CONCAT(producer_FN, ' ', producer_LN) AS 'Producer Name', COUNT(song_id) AS "Number of Songs Produced"
+FROM producer JOIN songs_link_producer USING (producer_id) JOIN songs ON songs.song_id = songs_link_producer.songs_id
+GROUP BY producer_id
+ORDER BY COUNT(song_id) DESC;
